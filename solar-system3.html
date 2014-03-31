@@ -6,7 +6,7 @@
     <script type="text/javascript" src="lib/d3.js"></script>
     <style type="text/css">
 
-        svg { width: 12000px; height: 1200px; margin:0 auto;}
+        svg { width: 100%; height: auto; margin:0 auto;}
         text { font-family: helvetica; font-size: 16px; color: #333;}
 
     </style>
@@ -25,18 +25,19 @@
         { body:'Saturn', size:116464, distance:1433000000 },
         { body:'Uranus', size:50724, distance:2877000000 },
         { body:'Neptune', size:49244, distance:4503000000 }
-    ]
+    ];
 
     var commaFormat = d3.format(',');
     var units = { size:'km', distance:'km' }
     var keys = d3.keys(objects[0]);
     var fantasy = false;
 
-    var ORBIT_SCALE = 500, ORBIT_START = 10, OBJECT_SCALE = .001;
+    var ORBIT_SCALE = .00003, ORBIT_START = 10, OBJECT_SCALE = .001;
     function orbit(d) {
-        var distance = d.distance ? Math.log(d.distance) : 0;
-        distance *= ORBIT_SCALE;
+        //var distance = d.distance ? Math.log(d.distance) / Math.log(200) : 0;
+        var distance = d.distance * ORBIT_SCALE;
         var offset = -1200;
+        console.log(distance + offset)
         return distance + offset;
     }
     function object_size(d) {
@@ -64,6 +65,20 @@
         labels.enter().append('text').text(function(d) {return d.body;})
                 .attr('transform',function(d) {return 'translate('+(orbit(d)+6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
         labels.exit().remove();
+
+        var longestOrbit = orbit(objects[objects.length - 1]);
+        bodies.transition()
+                .attr("cx", function(d) { return orbit(d) - longestOrbit; })
+                .ease('linear')
+                .delay(5000)
+                .duration(120000)
+                .each("end", function() { console.log('end'); });
+
+        labels.transition()
+                .attr('transform',function(d) {return 'translate('+(orbit(d) - longestOrbit + 6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
+                .ease('linear')
+                .delay(5000)
+                .duration(120000);
     }
 
     update();
