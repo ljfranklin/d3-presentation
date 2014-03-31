@@ -43,16 +43,14 @@
             .orient("left");
 
     var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            //.attr("width", width + margin.left + margin.right)
+            //.attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.json("data/box_office.json", function(error, data) {
         data = data.movies;
 
-        //x.domain(d3.extent(data, function(d) { return d.ratings.critics_score; })).nice();
-        //y.domain(d3.extent(data, function(d) { return d.ratings.audience_score; })).nice();
         x.domain([0, 100]);
         y.domain([0, 100]);
 

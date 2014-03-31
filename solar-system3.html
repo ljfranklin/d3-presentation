@@ -44,7 +44,8 @@
         return d.size * OBJECT_SCALE;
     }
 
-    var vis = d3.select("#solar-system").append("svg").append('g').attr('transform','translate(600,350)')
+    var vis = d3.select("#solar-system").append("svg").append('g')
+            .attr('transform','translate(600,350)')
 
     function update() {
         var data =  objects;
@@ -66,19 +67,39 @@
                 .attr('transform',function(d) {return 'translate('+(orbit(d)+6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
         labels.exit().remove();
 
+
+        var easing = 'quad';
+        var delay = 5000;
+        var duration = 60000;
+
         var longestOrbit = orbit(objects[objects.length - 1]);
         bodies.transition()
                 .attr("cx", function(d) { return orbit(d) - longestOrbit; })
-                .ease('linear')
-                .delay(5000)
-                .duration(120000)
-                .each("end", function() { console.log('end'); });
+                .ease(easing)
+                .delay(delay)
+                .duration(duration);
 
         labels.transition()
                 .attr('transform',function(d) {return 'translate('+(orbit(d) - longestOrbit + 6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
-                .ease('linear')
-                .delay(5000)
-                .duration(120000);
+                .ease(easing)
+                .delay(delay)
+                .duration(duration);
+
+        var totalKm = objects[objects.length - 1].distance;
+        vis.append('text')
+                .text('\u2193 0 million km away from the Sun')
+                .style("font-size","34px")
+                .attr('transform','translate(-600, -300)')
+                .transition()
+                .ease(easing)
+                .delay(delay)
+                .duration(duration)
+                .tween("text", function(d) {
+                    return function(percentComplete) {
+                        var kmSoFar = Math.round((percentComplete * totalKm) / 1000000);
+                        this.textContent = '\u2193 ' + kmSoFar + ' million km away from the Sun';
+                    };
+                });
     }
 
     update();
