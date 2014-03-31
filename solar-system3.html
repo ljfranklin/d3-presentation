@@ -7,8 +7,6 @@
     <style type="text/css">
 
         svg { width: 12000px; height: 1200px; margin:0 auto;}
-        ellipse.orbit { fill:none; stroke:#9cf; stroke-width:2px;}
-        ellipse.object { fill:#333; }
         text { font-family: helvetica; font-size: 16px; color: #333;}
 
     </style>
@@ -52,7 +50,14 @@
         function data_key(d) { return d.body; }
 
         var bodies = vis.selectAll('ellipse.object').data(data, data_key);
-        bodies.enter().append('ellipse').attr('cx',orbit).attr('cy',0).attr('rx',object_size).attr('ry',object_size).classed('object',true)
+        bodies.enter()
+                .append('ellipse')
+                .attr('fill', function(d) { return d.body === 'Sun' ? 'yellow' : '#333' })
+                .attr('cx',orbit)
+                .attr('cy',0)
+                .attr('rx',object_size)
+                .attr('ry',object_size)
+                .classed('object',true)
         bodies.exit().remove();
 
         var labels = vis.selectAll('text').data(data, data_key);
