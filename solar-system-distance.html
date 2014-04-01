@@ -11,7 +11,7 @@
     <script type="text/javascript" src="lib/d3.js"></script>
     <style type="text/css">
 
-        svg { width: 100%; height: auto; margin:0 auto; background-color: white;}
+        svg { width: 100%; height: 700px; margin:0 auto; background-color: white;}
         text { font-family: helvetica; font-size: 16px; color: #333;}
 
     </style>
@@ -33,7 +33,11 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron">
-            <h2>Q: How far apart are the planets?</h2>
+            <h2>Q: How far apart are the planets?
+                <button id="play" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+            </h2>
             <div id="solar-system"></div>
             <script type="text/javascript">
 
@@ -58,7 +62,6 @@
                 function orbit(d) {
                     var distance = d.distance * ORBIT_SCALE;
                     var offset = -1200;
-                    console.log(distance + offset)
                     return distance + offset;
                 }
                 function object_size(d) {
@@ -68,52 +71,48 @@
                 var vis = d3.select("#solar-system").append("svg").append('g')
                         .attr('transform','translate(600,350)')
 
-                function update() {
-                    var data =  objects;
-                    function data_key(d) { return d.body; }
+                var data =  objects;
+                function data_key(d) { return d.body; }
 
-                    var bodies = vis.selectAll('ellipse.object').data(data, data_key);
-                    bodies.enter()
-                            .append('ellipse')
-                            .attr('fill', function(d) { return d.body === 'Sun' ? 'yellow' : '#333' })
-                            .attr('cx',orbit)
-                            .attr('cy',0)
-                            .attr('rx',object_size)
-                            .attr('ry',object_size)
-                            .classed('object',true)
-                    bodies.exit().remove();
+                var bodies = vis.selectAll('ellipse.object').data(data, data_key);
+                bodies.enter()
+                        .append('ellipse')
+                        .attr('fill', function(d) { return d.body === 'Sun' ? 'yellow' : '#333' })
+                        .attr('cx',orbit)
+                        .attr('cy',0)
+                        .attr('rx',object_size)
+                        .attr('ry',object_size)
+                        .classed('object',true)
+                bodies.exit().remove();
 
-                    var labels = vis.selectAll('text').data(data, data_key);
-                    labels.enter().append('text').text(function(d) {return d.body;})
-                            .attr('transform',function(d) {return 'translate('+(orbit(d)+6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
-                    labels.exit().remove();
+                var labels = vis.selectAll('text').data(data, data_key);
+                labels.enter().append('text').text(function(d) {return d.body;})
+                        .attr('transform',function(d) {return 'translate('+(orbit(d)+6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
+                labels.exit().remove();
 
+                var distanceCounter = vis.append('text')
+                        .text('\u2193 0 million km away from the Sun')
+                        .style("font-size","34px")
+                        .attr('transform','translate(-600, -300)');
 
-                    var easing = 'quad';
-                    var delay = 5000;
-                    var duration = 60000;
+                document.getElementById('play').onclick = function() {
+                    var easing = 'cubic';
+                    var duration = 30000;
 
                     var longestOrbit = orbit(objects[objects.length - 1]);
                     bodies.transition()
                             .attr("cx", function(d) { return orbit(d) - longestOrbit; })
                             .ease(easing)
-                            .delay(delay)
                             .duration(duration);
 
                     labels.transition()
                             .attr('transform',function(d) {return 'translate('+(orbit(d) - longestOrbit + 6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
                             .ease(easing)
-                            .delay(delay)
                             .duration(duration);
 
                     var totalKm = objects[objects.length - 1].distance;
-                    var distanceCounter = vis.append('text')
-                            .text('\u2193 0 million km away from the Sun')
-                            .style("font-size","34px")
-                            .attr('transform','translate(-600, -300)')
-                            .transition()
+                    distanceCounter.transition()
                             .ease(easing)
-                            .delay(delay)
                             .duration(duration)
                             .tween("text", function(d) {
                                 return function(percentComplete) {
@@ -121,9 +120,7 @@
                                     this.textContent = '\u2193 ' + kmSoFar + ' million km away from the Sun';
                                 };
                             });
-                }
-
-                update();
+                };
 
             </script>
         </div>
