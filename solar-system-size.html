@@ -33,16 +33,15 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron">
-            <h2>Q: How much larger is the Sun than the Earth?</h2>
-            <h3>The Sun's area is <span id="counter">1</span> times larger than the Earth's</h3>
+            <h2>Q: How much larger is the Sun than the Earth?
+                <button id="play" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+            </h2>
+            <h3>The Sun's area is <span id="counter">X</span> times larger than the Earth's</h3>
             <div id="canvas"></div>
             <script type="text/javascript">
                 var size = 480;
-
-                var data = {
-                    name : "root",
-                    children : []
-                };
 
                 var pack = d3.layout.pack()
                         .size([size, size])
@@ -65,23 +64,37 @@
                             .attr('stroke', 'grey');
                 }
 
-                var intervalId = setInterval(function() {
+                //only draw sun on load
+                var data = {
+                    name : "root",
+                    size: 1
+                };
+                update();
 
-                    document.getElementById('counter').innerHTML = data.children.length;
+                //start drawing children when play is pressed
+                data = {
+                    name: 'root',
+                    children: []
+                };
 
-                    for (var i = 0; i < 20; i++) {
-                        data.children.push({size: 1});
-                    }
+                document.getElementById('play').onclick = function() {
+                    var intervalId = setInterval(function() {
 
-                    if (data.children.length > 2970) {
-                        document.getElementById('counter').innerHTML = 2970;
-                        clearInterval(intervalId);
-                        return;
-                    }
+                        document.getElementById('counter').innerHTML = data.children.length;
 
-                    update();
-                }, 100);
+                        for (var i = 0; i < 40; i++) {
+                            data.children.push({size: 1});
+                        }
 
+                        if (data.children.length > 2970) {
+                            document.getElementById('counter').innerHTML = 2970;
+                            clearInterval(intervalId);
+                            return;
+                        }
+
+                        update();
+                    }, 100);
+                };
             </script>
         </div>
     </div>
