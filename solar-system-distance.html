@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>D3 Presentation</title>
+
+    <link href="lib/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/d3.js"></script>
+    <style type="text/css">
+
+        svg { width: 100%; height: auto; margin:0 auto; background-color: white;}
+        text { font-family: helvetica; font-size: 16px; color: #333;}
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <ul class="nav navbar-nav navbar-left">
+            <li class="disabled"><a href="solar-system-table.html"><span class="glyphicon glyphicon-chevron-left"></span> Previous</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-center">
+            <li class="navbar-text">D3: Data-Driven Documents</li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="solar-system-size.html">Next <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+            <h2>Q: How far apart are the planets?</h2>
+            <div id="solar-system"></div>
+            <script type="text/javascript">
+
+                var objects = [
+                    { body:'Sun', size:1391000, distance:0 },
+                    { body:'Mercury', size:4879, distance:57910000 },
+                    { body:'Venus', size:12104, distance:108200000 },
+                    { body:'Earth', size:12742, distance:149600000 },
+                    { body:'Mars', size:6779, distance:227900000 },
+                    { body:'Jupiter', size:139822 , distance:778500000 },
+                    { body:'Saturn', size:116464, distance:1433000000 },
+                    { body:'Uranus', size:50724, distance:2877000000 },
+                    { body:'Neptune', size:49244, distance:4503000000 }
+                ];
+
+                var commaFormat = d3.format(',');
+                var units = { size:'km', distance:'km' }
+                var keys = d3.keys(objects[0]);
+                var fantasy = false;
+
+                var ORBIT_SCALE = .00003, ORBIT_START = 10, OBJECT_SCALE = .001;
+                function orbit(d) {
+                    var distance = d.distance * ORBIT_SCALE;
+                    var offset = -1200;
+                    console.log(distance + offset)
+                    return distance + offset;
+                }
+                function object_size(d) {
+                    return d.size * OBJECT_SCALE;
+                }
+
+                var vis = d3.select("#solar-system").append("svg").append('g')
+                        .attr('transform','translate(600,350)')
+
+                function update() {
+                    var data =  objects;
+                    function data_key(d) { return d.body; }
+
+                    var bodies = vis.selectAll('ellipse.object').data(data, data_key);
+                    bodies.enter()
+                            .append('ellipse')
+                            .attr('fill', function(d) { return d.body === 'Sun' ? 'yellow' : '#333' })
+                            .attr('cx',orbit)
+                            .attr('cy',0)
+                            .attr('rx',object_size)
+                            .attr('ry',object_size)
+                            .classed('object',true)
+                    bodies.exit().remove();
+
+                    var labels = vis.selectAll('text').data(data, data_key);
+                    labels.enter().append('text').text(function(d) {return d.body;})
+                            .attr('transform',function(d) {return 'translate('+(orbit(d)+6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
+                    labels.exit().remove();
+
+
+                    var easing = 'quad';
+                    var delay = 5000;
+                    var duration = 60000;
+
+                    var longestOrbit = orbit(objects[objects.length - 1]);
+                    bodies.transition()
+                            .attr("cx", function(d) { return orbit(d) - longestOrbit; })
+                            .ease(easing)
+                            .delay(delay)
+                            .duration(duration);
+
+                    labels.transition()
+                            .attr('transform',function(d) {return 'translate('+(orbit(d) - longestOrbit + 6)+',-'+(object_size(d)+5)+'),rotate(-90),scale(1,1)'})
+                            .ease(easing)
+                            .delay(delay)
+                            .duration(duration);
+
+                    var totalKm = objects[objects.length - 1].distance;
+                    var distanceCounter = vis.append('text')
+                            .text('\u2193 0 million km away from the Sun')
+                            .style("font-size","34px")
+                            .attr('transform','translate(-600, -300)')
+                            .transition()
+                            .ease(easing)
+                            .delay(delay)
+                            .duration(duration)
+                            .tween("text", function(d) {
+                                return function(percentComplete) {
+                                    var kmSoFar = Math.round((percentComplete * totalKm) / 1000000);
+                                    this.textContent = '\u2193 ' + kmSoFar + ' million km away from the Sun';
+                                };
+                            });
+                }
+
+                update();
+
+            </script>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>D3 Presentation</title>
+
+    <link href="lib/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <script src="lib/d3.js"></script>
+    <style type="text/css">
+        #counter {
+            font-size: 36px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <ul class="nav navbar-nav navbar-left">
+            <li class="disabled"><a href="solar-system-distance.html"><span class="glyphicon glyphicon-chevron-left"></span> Previous</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-center">
+            <li class="navbar-text">D3: Data-Driven Documents</li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Next <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+            <h2>Q: How much larger is the Sun than the Earth?</h2>
+            <h3>The Sun's area is <span id="counter">1</span> times larger than the Earth's</h3>
+            <div id="canvas"></div>
+            <script type="text/javascript">
+                var size = 480;
+
+                var data = {
+                    name : "root",
+                    children : []
+                };
+
+                var pack = d3.layout.pack()
+                        .size([size, size])
+                        .value(function(d) { return d.size; })
+                        .padding(5);
+
+                var svg = d3.select("#canvas").append("svg")
+                        .attr("width", size)
+                        .attr("height", size);
+
+                function update() {
+                    svg.selectAll("circle").remove();
+                    svg.selectAll("circle")
+                            .data(pack.nodes(data))
+                            .enter().append("circle")
+                            .attr("r", function(d) { return d.r; })
+                            .attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; })
+                            .style("fill", function(d) { return d.name === 'root' ? 'yellow' : 'black' })
+                            .attr('stroke', 'grey');
+                }
+
+                var intervalId = setInterval(function() {
+
+                    document.getElementById('counter').innerHTML = data.children.length;
+
+                    for (var i = 0; i < 20; i++) {
+                        data.children.push({size: 1});
+                    }
+
+                    if (data.children.length > 2970) {
+                        document.getElementById('counter').innerHTML = 2970;
+                        clearInterval(intervalId);
+                        return;
+                    }
+
+                    update();
+                }, 100);
+
+            </script>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="lib/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+</body>
+</html>
