@@ -8,6 +8,14 @@
 
     <link href="lib/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+
+    <style>
+        .answer {
+            display: none;
+            font-size: 48px;
+        }
+
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-default" role="navigation">
@@ -26,13 +34,30 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron">
-            <h2>Q: How do I present my data?</h2>
-            <h1>A: Show, don't tell</h1>
+            <h2>Q: How do I present my data?
+                <button id="play" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+            </h2>
+            <span class="answer answer-start">A:</span>
+            <span class="answer answer-middle">Show</span>
+            <span class="answer answer-end">, don't tell</span>
         </div>
     </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="lib/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+<script>
+    var animateTime = 1500;
+    $('#play').on('click', function() {
+        $('.answer-start').fadeIn(animateTime, function() {
+            $('.answer-middle').fadeIn(animateTime, function() {
+                $('.answer-end').fadeIn(animateTime);
+            });
+        });
+    });
+</script>
 </body>
 </html>
