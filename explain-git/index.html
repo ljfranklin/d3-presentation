@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Explain Git with D3</title>
+<script data-main="js/main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.4/require.min.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/1140/2.0/1140.css">
+<link rel="stylesheet" href="css/explaingit.css">
+</head>
+<body>
+<div class="container">
+  <div class="row intro">
+    <div class="twelvecol">
+      <h1>Visualizing Git Concepts with D3</h1>
+    </div>
+  </div>
+  <div class="row concept-area">
+      <div id="ExplainGitPull-Container" class="twelvecol concept-container">
+          <!--<p>-->
+              <!--A <span class="cmd">git pull</span> is a two step process that first does a <span class="cmd">git fetch</span>,-->
+              <!--and then does a <span class="cmd">git merge</span> of the remote tracking branch associated with your current branch.-->
+              <!--If you have no current branch, the process will stop after fetching.-->
+          <!--</p>-->
+          <!--<p>-->
+              <!--If the argument "--rebase" was given by typing <span class="cmd">git pull --rebase</span>, the second step of-->
+              <!--pull process will be a rebase instead of a merge. This can be set to the default behavior by configuration by typing:-->
+              <!--<span class="cmd">git config branch.BRANCHNAME.rebase true</span>.-->
+          <!--</p>-->
+          <div class="playground-container"></div>
+      </div>
+  </div>
+</div>
+
+<svg version="1.1" baseProfile="full"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:ev="http://www.w3.org/2001/xml-events"
+     width="0" height="0">
+
+    <marker id="triangle" refX="5" refY="5" markerUnits="strokeWidth" fill="#666"
+            markerWidth="4" markerHeight="3" orient="auto" viewBox="0 0 10 10">
+        <path d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+    <marker id="faded-triangle" refX="5" refY="5" markerUnits="strokeWidth" fill="#DDD"
+            markerWidth="4" markerHeight="3" orient="auto" viewBox="0 0 10 10">
+        <path d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+    <marker id="brown-triangle" refX="5" refY="5" markerUnits="strokeWidth" fill="#663300"
+            markerWidth="4" markerHeight="3" orient="auto" viewBox="0 0 10 10">
+        <path d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+</svg>
+
+<script type="text/javascript">
+require(['explaingit'], function (explainGit) {
+    var openSwitch = document.getElementById('open-pull'),
+        open;
+
+    open = function () {
+        explainGit.reset();
+
+        explainGit.open({
+            name: 'Pull',
+            height: 500,
+            commitData: [
+                {id: 'e137e9b', tags: ['origin/master', 'master']}
+//                {id: '46d095b', parent: 'e137e9b', tags: ['master']}
+            ],
+            originData: [
+                {id: 'e137e9b'},
+                {id: '7eb7654', parent: 'e137e9b'},
+                {id: '090e2b8', parent: '7eb7654'},
+                {id: 'ee5df4b', parent: '090e2b8', tags: ['master']}
+            ],
+            initialMessage:
+                'Carefully compare the commit IDs between the origin and the local repository. ' +
+                'Then type "git pull".'
+        });
+    };
+
+    open();
+});
+</script>
+</body>
+</html>

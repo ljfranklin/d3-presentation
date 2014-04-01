@@ -5,11 +5,15 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <script src="lib/d3.js"></script>
     <style type="text/css">
+        #counter {
+            font-size: 36px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div id="canvas"></div>
-<h3>The Sun's area is 2970 times larger than the Earth's</h3>
+<h3>The Sun's area is <span id="counter">1</span> times larger than the Earth's</h3>
 <script type="text/javascript">
     var size = 480;
 
@@ -17,10 +21,6 @@
         name : "root",
         children : []
     };
-
-    for (var i = 0; i < 2970; i++) {
-        data.children.push({size: 1});
-    }
 
     var pack = d3.layout.pack()
             .size([size, size])
@@ -31,15 +31,35 @@
             .attr("width", size)
             .attr("height", size);
 
-    svg.selectAll("circle")
-            .data(pack.nodes(data))
-            .enter().append("circle")
-            .attr("r", function(d) { return d.r; })
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; })
-            //.attr('fill', 'white')
-            .style("fill", function(d) { return d.name === 'root' ? 'yellow' : 'black' })
-            .attr('stroke', 'grey');
+    function update() {
+        svg.selectAll("circle").remove();
+        svg.selectAll("circle")
+                .data(pack.nodes(data))
+                .enter().append("circle")
+                .attr("r", function(d) { return d.r; })
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; })
+                .style("fill", function(d) { return d.name === 'root' ? 'yellow' : 'black' })
+                .attr('stroke', 'grey');
+    }
+
+    var intervalId = setInterval(function() {
+
+        document.getElementById('counter').innerHTML = data.children.length;
+
+        for (var i = 0; i < 20; i++) {
+            data.children.push({size: 1});
+        }
+
+        if (data.children.length > 2970) {
+            document.getElementById('counter').innerHTML = 2970;
+            clearInterval(intervalId);
+            return;
+        }
+
+        update();
+    }, 100);
+
 </script>
 </body>
 </html>
